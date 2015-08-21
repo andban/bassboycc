@@ -16,6 +16,8 @@ class App
 public:
         App() { }
 
+        static void init();
+
         // ui callbacks
         static void onLoad() { };
         static void onPotRotate(uint8_t id, int8_t value);
@@ -23,6 +25,7 @@ public:
         static void onIdle();
 
         // bassboy parameters
+        static void setPreFilterGain(uint8_t value);
         static void setCutOff(uint8_t value);
         static void setCutOffStep(uint8_t value);
         static void setResonance(uint8_t value);
@@ -57,6 +60,16 @@ private:
         static void sendPC(uint8_t program);
 
         static uint8_t m_channel;
+        static uint8_t m_preFilterGain;
+        static uint8_t m_cutoff;
+        static uint8_t m_cutoffStep;
+        static uint8_t m_resonance;
+        static uint8_t m_envelopeDecay;
+        static uint8_t m_envelopeMod;
+        static uint8_t m_accent;
+        static uint8_t m_distortion;
+        static uint8_t m_volume;
+        static BassBoyWave m_waveForm;
 };
 
 extern App app;

@@ -4,12 +4,13 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "avrlib/devices/pot_scanner.h"
+//#include "avrlib/devices/pot_scanner.h"
+//#include "avrlib/devices/mux4051.h"
 #include "avrlib/devices/switch.h"
 #include "avrlib/ui/event_queue.h"
 
 #include "bassboycc/hardware.h"
-
+#include "bassboycc/devices/mux_pot_scanner.h"
 
 namespace bassboycc
 {
@@ -20,10 +21,10 @@ enum PotIndex
         POT_2,
         POT_3,
         POT_4,
-        // POT_5,
-        // POT_6,
-        // POT_7,
-        // POT_8,
+        POT_5,
+        POT_6,
+        POT_7,
+        //POT_8,
 
         POT_COUNT
 };
@@ -51,9 +52,9 @@ enum EventId {
         EVT_COUNT
 };
 
-
-typedef avrlib::PotScanner<POT_COUNT, 0, 8, 7> ParameterPots;
-typedef avrlib::DebouncedSwitch<ToggleSwitchGpio, false> ToggleSwitch;
+typedef avrlib::Mux4051Port<avrlib::PortB> ParameterMux;
+typedef MuxPotScanner<ParameterMux, 0, POT_COUNT, 8, 7> ParameterPots;
+typedef avrlib::DebouncedSwitch<ToggleSwitchGpio> ToggleSwitch;
 /**
  *
  */
@@ -89,8 +90,6 @@ private:
         static avrlib::EventQueue<16> m_events;
 
         static uint8_t                m_potWarmupCycles;
-        static uint8_t                m_potValues[POT_COUNT];
-        static uint8_t                m_toggleValue;
         static uint8_t                m_cycle;
 };
 

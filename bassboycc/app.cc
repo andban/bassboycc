@@ -18,7 +18,21 @@ namespace bassboycc
 avrlib::Serial<MidiPort, 31250, avrlib::DISABLED, avrlib::POLLED> midiChannel;
 
 // static
-uint8_t App::m_channel;
+uint8_t App::m_channel = 0;
+uint8_t App::m_preFilterGain = 0;
+uint8_t App::m_cutoff = 0;
+uint8_t App::m_cutoffStep = 30;
+uint8_t App::m_resonance = 0;
+uint8_t App::m_envelopeDecay = 0;
+uint8_t App::m_envelopeMod = 0;
+uint8_t App::m_accent = 0;
+uint8_t App::m_distortion = 4;
+uint8_t App::m_volume = 127;
+BassBoyWave App::m_waveForm = BB_WAVE_SAW;
+
+void App::init()
+{
+}
 
 void App::onPotRotate(uint8_t id, int8_t value)
 {
@@ -40,7 +54,8 @@ void App::onPotRotate(uint8_t id, int8_t value)
                 setEnvelopeMod(value);
                 break;
         case EVT_POT_6:
-                setCutOffStep(value);
+                //setCutOffStep(value);
+                setPreFilterGain(value);
                 break;
         case EVT_POT_7:
                 setDistortion(value);
@@ -81,48 +96,113 @@ void App::sendPC(uint8_t program)
         midiSend2(0xC0 | OUT_CHANNEL, program);
 }
 
+void App::setPreFilterGain(uint8_t value)
+{
+        if (m_preFilterGain == value)
+        {
+                return;
+        }
+
+        m_preFilterGain = value;
+        sendCC(53, value);
+}
+
 void App::setCutOff(uint8_t value)
 {
+        if (m_cutoff == value)
+        {
+                return;
+        }
+
+        m_cutoff = value;
         sendCC(54, value);
 }
 
 void App::setCutOffStep(uint8_t value)
 {
+        if (m_cutoffStep == value)
+        {
+                return;
+        }
+
+        m_cutoffStep = value;
         sendCC(60, value);
 }
 
 void App::setResonance(uint8_t value)
 {
+        if (m_resonance == value)
+        {
+                return;
+        }
+
+        m_resonance = value;
         sendCC(55, value);
 }
 
 void App::setEnvelopeDecay(uint8_t value)
 {
+        if (m_envelopeDecay == value)
+        {
+                return;
+        }
+
+        m_envelopeDecay = value;
         sendCC(57, value);
 }
 
 void App::setEnvelopeMod(uint8_t value)
 {
+        if (m_envelopeMod == value)
+        {
+                return;
+        }
+
+        m_envelopeMod = value;
         sendCC(56, value);
 }
 
 void App::setAccent(uint8_t value)
 {
+        if (m_accent == value)
+        {
+                return;
+        }
+
+        m_accent = value;
         sendCC(58, value);
 }
 
 void App::setDistortion(uint8_t value)
 {
+        if (m_distortion == value)
+        {
+                return;
+        }
+
+        m_distortion = value;
         sendCC(59, value);
 }
 
 void App::setVolume(uint8_t value)
 {
+        if (m_volume == value)
+        {
+                return;
+        }
+
+        m_volume = value;
         sendCC(7, value);
 }
 
 void App::setWaveForm(BassBoyWave waveForm)
 {
+        if (m_waveForm == waveForm)
+        {
+                return;
+        }
+
+        m_waveForm = waveForm;
         sendPC(waveForm);
 }
 
@@ -164,7 +244,9 @@ void App::flushOutputBuffer(uint8_t n)
         while (MidiHandler::OutputBuffer::writable() < n)
         {
                 uint8_t byte = MidiHandler::OutputBuffer::Read();
+#ifdef NDEBUG
                 midiChannel.Write(byte);
+#endif // NDEBUG
         }
 }
 
@@ -256,7 +338,6 @@ void App::onRawMidiData(uint8_t status, uint8_t* data, uint8_t size, uint8_t cha
         {
                 return;
         }
-
         midiSend(status, data, size);
 }
 

@@ -12,13 +12,12 @@
 typedef avrlib::SerialPort0 DebugPort;
 
 // MIDI
-typedef avrlib::SerialPort1 MidiPort;
-
+typedef avrlib::SerialPort0 MidiPort;
 
 // Buttons
-typedef avrlib::Gpio<avrlib::PortE, 4> ToggleSwitchGpio;
-typedef avrlib::Gpio<avrlib::PortB, 7> DebugLedGpio;
+typedef avrlib::Gpio<avrlib::PortD, 3> ToggleSwitchGpio;
+typedef avrlib::Gpio<avrlib::PortB, 5> DebugLedGpio;
 
-//
+
 
 #endif BASSBOYCC_HARDWARE_H_

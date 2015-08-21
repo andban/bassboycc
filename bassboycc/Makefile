@@ -1,14 +1,23 @@
 VERSION = 0.01
-MCU_NAME = atmega2560
-F_CPU = 16000000
+#FAMILY = mega
+MCU_NAME = 328
 TARGET		= bassboycc
 PACKAGES  = avrlib bassboycc
-PROGRAMMER_PORT = /dev/tty.usbmodem1411
-PROGRAMMER = wiring
-AVRDUDE_ERASE = yes
+
+F_CPU = 20000000
+PROGRAMMER_PORT = usb
+PROGRAMMER = arduinoisp
+
+AVRDUDE_ERASE = no
 AVRDUDE_LOCK = no
 
-EXTRA_DEFINES =
+## Nano
+#PROGRAMMER_PORT = /dev/tty.usbserial-A6030UOD
+#PROGRAMMER = arduino
+#F_CPU = 16000000
+
+
+EXTRA_DEFINES = -DNDEBUG
 
 include avrlib/makefile.mk
 

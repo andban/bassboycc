@@ -18,10 +18,12 @@ using namespace avrlib;
 using namespace bassboycc;
 using namespace midi;
 
-Serial<MidiPort, 31250, POLLED, POLLED> midiChannel;
 MidiStreamParser<MidiHandler> midiParser;
+Serial<MidiPort, 31250, POLLED, POLLED> midiChannel;
 
+#ifndef NDEBUG
 DebugOutput< Serial<DebugPort, 9600, DISABLED, POLLED> > dbg;
+#endif // !NDEBUG
 
 void readMidiIn()
 {
@@ -40,28 +42,26 @@ void writeMidiOut()
     if (MidiHandler::OutputBuffer::readable() && midiChannel.writable())
     {
         uint8_t byte = MidiHandler::OutputBuffer::ImmediateRead();
+#ifdef NDEBUG
         midiChannel.Overwrite(byte);
+#endif // NDEBUG
     }
 }
 
 ISR(TIMER2_OVF_vect, ISR_NOBLOCK)
 {
     // 4.9 kHz
-
     readMidiIn();
     writeMidiOut();
-
     static uint8_t subClock = 0;
     ++subClock;
     if ((subClock & 1) == 0)
     {
         // 2.45 kHz
-
         ui.read();
         if ((subClock & 3) == 0)
         {
             // 1.225 kHz
-
             TickSystemClock();
         }
     }
@@ -70,6 +70,12 @@ ISR(TIMER2_OVF_vect, ISR_NOBLOCK)
 void init()
 {
     sei();
+
+#ifndef NDEBUG
+    dbg.Init();
+#else // NDEBUG
+    midiChannel.Init();
+#endif // NDEBUG
 
     Timer<0>::set_prescaler(1);
     Timer<0>::set_mode(TIMER_PWM_PHASE_CORRECT);
@@ -80,13 +86,7 @@ void init()
     Timer<2>::set_prescaler(2);
     Timer<2>::set_mode(TIMER_PWM_PHASE_CORRECT);
 
-
-    DebugLedGpio::set_mode(DIGITAL_OUTPUT);
-    DebugLedGpio::Low();
-
-    dbg.Init();
-    midiChannel.Init();
-
+    app.init();
     ui.init();
 
     Timer<2>::Start();
